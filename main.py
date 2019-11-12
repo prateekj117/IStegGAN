@@ -133,9 +133,9 @@ class SingleSizeModel:
         global_step = self.sess.run(self.global_step_tensor)
         tf.reset_default_graph()
         imported_meta = tf.train.import_meta_graph(
-            "/home/geeky_boy/IStegGAN/Wnet/Checkpoints/")
+            "/home/gpu/IStegGAN/Wnet/Checkpoints/")
         imported_meta.restore(self.sess,
-                              tf.train.latest_checkpoint('/home/geeky_boy/IStegGAN/Wnet/Checkpoints/'))
+                              tf.train.latest_checkpoint('/home/gpu/IStegGAN/Wnet/Checkpoints/'))
         # saver.restore(self.sess, path)
         print("LOADED")
 
@@ -156,7 +156,7 @@ class SingleSizeModel:
                 print("cover loss at step %s: %s" % (step, cover_loss))
                 print("secret loss at step %s: %s" % (step, secret_loss))
 
-        self.make_chkp(saver, "/home/geeky_boy/IStegGAN/Wnet/Checkpoints/model.ckpt")
+        self.make_chkp(saver, "/home/gpu/IStegGAN/Wnet/Checkpoints/model.ckpt")
 
     def test(self, saver, files_list, batch_size, path):
         self.load_chkp(saver, path)
@@ -198,9 +198,9 @@ class SingleSizeModel:
             print("secret loss at step %s: %s" % (step, secret_loss))
 
 
-m = SingleSizeModel(beta=.75, log_path="/home/geeky_boy/IStegGAN/Wnet/logs")
+m = SingleSizeModel(beta=.75, log_path="/home/gpu/IStegGAN/Wnet/logs")
 saver = tf.train.Saver()
-train_list = os.listdir('/home/geeky_boy/IStegGAN/image224/train')
-test_list = os.listdir('/home/geeky_boy/IStegGAN/image224/test')
+train_list = os.listdir('/home/gpu/IStegGAN/image224/train')
+test_list = os.listdir('/home/gpu/IStegGAN/image224/test')
 m.train(saver, 50001, train_list, 4)
-# m.test(saver, test_list, 1, '/home/geeky_boy/IStegGAN/Wnet/Checkpoints/model.ckpt')
+# m.test(saver, test_list, 1, '/home/gpu/IStegGAN/Wnet/Checkpoints/model.ckpt')

@@ -15,9 +15,9 @@ def denormalize_batch(imgs, should_clip=True):
     return imgs
 
 
-def get_img_batch(files_list, batch_size, p, size=(224, 224, 3), should_normalise=True):
-    train_path = '/home/geeky_boy/IStegGAN/image224/train/'
-    test_path = '/home/geeky_boy/IStegGAN/image224/test/'
+def get_img_batch(files_list, batch_size, p, size=(224, 224), should_normalise=True):
+    train_path = '/home/gpu/IStegGAN/image224/train/'
+    test_path = '/home/gpu/IStegGAN/image224/test/'
 
     if p == 0:
         path = train_path
@@ -45,8 +45,8 @@ def get_img_batch(files_list, batch_size, p, size=(224, 224, 3), should_normalis
 
     batch_cover, batch_secret = np.array(batch_cover), np.array(batch_secret)
 
-    if should_normalise:
-        batch_cover = normalize_batch(batch_cover)
-        batch_secret = normalize_batch(batch_secret)
+    # if should_normalise:
+        # batch_cover = normalize_batch(batch_cover)
+        # batch_secret = normalize_batch(batch_secret)
 
     return batch_cover, batch_secret
