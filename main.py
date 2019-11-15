@@ -19,7 +19,7 @@ class SingleSizeModel:
     #       with tf.variable_scope("noise_layer"):
     #           return tensor + tf.random_normal(shape=tf.shape(tensor), mean=0.0, stddev=std, dtype=tf.float32)
 
-    def get_loss_op(self, secret_true, secret_pred, cover_true, cover_pred, beta=.75):
+    def get_loss_op(self, secret_true, secret_pred, cover_true, cover_pred, beta=0.8):
 
         with tf.variable_scope("losses"):
             beta = tf.constant(beta, name="beta")
@@ -30,10 +30,10 @@ class SingleSizeModel:
 
             return final_loss, secret_mse, cover_mse
 
-    def get_tensor_to_img_op(self, tensor):
-        with tf.variable_scope("", reuse=True):
-            t = tensor * tf.convert_to_tensor([0.229, 0.224, 0.225]) + tf.convert_to_tensor([0.485, 0.456, 0.406])
-            return tf.clip_by_value(t, 0, 1)
+    #def get_tensor_to_img_op(self, tensor):
+    #    with tf.variable_scope("", reuse=True):
+    #        t = tensor * tf.convert_to_tensor([0.229, 0.224, 0.225]) + tf.convert_to_tensor([0.485, 0.456, 0.406])
+    #        return tf.clip_by_value(t, 0, 1)
 
     def prepare_training_graph(self, secret_tensor, cover_tensor, global_step_tensor):
 
@@ -52,10 +52,10 @@ class SingleSizeModel:
         tf.summary.scalar('reveal_net_loss', secret_loss_op, family='train')
         tf.summary.scalar('cover_net_loss', cover_loss_op, family='train')
 
-        tf.summary.image('secret', self.get_tensor_to_img_op(secret_tensor), max_outputs=1, family='train')
-        tf.summary.image('cover', self.get_tensor_to_img_op(cover_tensor), max_outputs=1, family='train')
-        tf.summary.image('hidden', self.get_tensor_to_img_op(hiding_output), max_outputs=1, family='train')
-        tf.summary.image('revealed', self.get_tensor_to_img_op(reveal_output), max_outputs=1, family='train')
+        tf.summary.image('secret', secret_tensor, max_outputs=1, family='train')
+        tf.summary.image('cover', cover_tensor, max_outputs=1, family='train')
+        tf.summary.image('hidden', hiding_output, max_outputs=1, family='train')
+        tf.summary.image('revealed', reveal_output, max_outputs=1, family='train')
 
         merged_summary_op = tf.summary.merge_all()
 
@@ -76,8 +76,8 @@ class SingleSizeModel:
             tf.summary.scalar('cover_net_loss', cover_loss_op, family='test')
 
             tf.summary.image('secret', self.secret_tensor, max_outputs=1, family='test')
-            tf.summary.image('cover', self.get_tensor_to_img_op(cover_tensor), max_outputs=1, family='test')
-            tf.summary.image('hidden', self.get_tensor_to_img_op(hiding_output), max_outputs=1, family='test')
+            tf.summary.image('cover', cover_tensor, max_outputs=1, family='test')
+            tf.summary.image('hidden', hiding_output, max_outputs=1, family='test')
             tf.summary.image('revealed', reveal_output, max_outputs=1, family='test')
 
             merged_summary_op = tf.summary.merge_all()
@@ -91,10 +91,10 @@ class SingleSizeModel:
 
             return hiding_output, reveal_output
 
-    def get_tensor_to_img_op(self, tensor):
-        with tf.variable_scope("", reuse=True):
-            t = tensor * tf.convert_to_tensor([0.229, 0.224, 0.225]) + tf.convert_to_tensor([0.485, 0.456, 0.406])
-            return tf.clip_by_value(t, 0, 1)
+    #def get_tensor_to_img_op(self, tensor):
+    #    with tf.variable_scope("", reuse=True):
+    #        t = tensor * tf.convert_to_tensor([0.229, 0.224, 0.225]) + tf.convert_to_tensor([0.485, 0.456, 0.406])
+    #        return tf.clip_by_value(t, 0, 1)
 
     def __init__(self, beta, log_path, input_shape=(None, 224, 224, 3), input_shape1=(None, 224, 224, 3)):
 
@@ -198,7 +198,7 @@ class SingleSizeModel:
             print("secret loss at step %s: %s" % (step, secret_loss))
 
 
-m = SingleSizeModel(beta=.75, log_path="/home/gpu/IStegGAN/Wnet/logs")
+m = SingleSizeModel(beta=0.8, log_path="/home/gpu/IStegGAN/Wnet/logs")
 saver = tf.train.Saver()
 train_list = os.listdir('/home/gpu/IStegGAN/image224/train')
 test_list = os.listdir('/home/gpu/IStegGAN/image224/test')
