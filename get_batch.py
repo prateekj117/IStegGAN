@@ -16,8 +16,8 @@ def denormalize_batch(imgs, should_clip=True):
 
 
 def get_img_batch(files_list, batch_size, p, size=(224, 224), should_normalise=True):
-    train_path = '/home/gpu/IStegGAN/image224/train/'
-    test_path = '/home/gpu/IStegGAN/image224/test/'
+    train_path = '/home/gpu/IStegGAN/imagenet50k/train/'
+    test_path = '/home/gpu/IStegGAN/imagenet50k/test/'
 
     if p == 0:
         path = train_path

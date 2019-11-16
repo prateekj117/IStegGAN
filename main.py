@@ -188,7 +188,7 @@ class SingleSizeModel:
 
 m = SingleSizeModel(beta=0.8, log_path="./Wnet/logs")
 saver = tf.train.Saver()
-train_list = os.listdir('./image224/train')
-test_list = os.listdir('./image224/test')
+train_list = os.listdir('./imagenet50k/train')
+test_list = os.listdir('./imagenet50k/test')
 m.train(saver, 50001, train_list, 4)
 m.test(saver, test_list, 1, './Wnet/Checkpoints/my-model.ckpt')
