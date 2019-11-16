@@ -23,9 +23,8 @@ class SingleSizeModel:
 
         with tf.variable_scope("losses"):
             beta = tf.constant(beta, name="beta")
-            batch_size = 4
-            secret_mse = batch_size * (tf.reduce_mean(tf.squared_difference(secret_true, secret_pred)))
-            cover_mse = batch_size * (tf.reduce_mean(tf.squared_difference(cover_true, cover_pred)))
+            secret_mse = tf.losses.mean_squared_error(secret_true, secret_pred)
+            cover_mse = tf.losses.mean_squared_error(cover_true, cover_pred)
             final_loss = cover_mse + beta * secret_mse
 
             return final_loss, secret_mse, cover_mse
@@ -84,13 +83,6 @@ class SingleSizeModel:
 
             return hiding_output, reveal_output, merged_summary_op, loss_op, secret_loss_op, cover_loss_op
 
-    def prepare_deployment_graph(self, secret_tensor, cover_tensor, covered_tensor):
-        with tf.variable_scope("", reuse=True):
-            hiding_output = hide_net.hiding_net(cover_tensor, secret_tensor)
-            reveal_output = reveal_net.reveal_net(hiding_output)
-
-            return hiding_output, reveal_output
-
     #def get_tensor_to_img_op(self, tensor):
     #    with tf.variable_scope("", reuse=True):
     #        t = tensor * tf.convert_to_tensor([0.229, 0.224, 0.225]) + tf.convert_to_tensor([0.485, 0.456, 0.406])
@@ -116,10 +108,6 @@ class SingleSizeModel:
         self.hiding_output_op, self.reveal_output_op, self.summary_op, self.loss_op, self.secret_loss_op, self.cover_loss_op = self.prepare_test_graph(
             self.secret_tensor, self.cover_tensor)
 
-        self.covered_tensor = tf.placeholder(shape=input_shape, dtype=tf.float32, name="deploy_covered")
-        self.deploy_hide_image_op, self.deploy_reveal_image_op = self.prepare_deployment_graph(self.secret_tensor,
-                                                                                               self.cover_tensor,
-                                                                                               self.covered_tensor)
         self.sess.run(tf.global_variables_initializer())
 
         print("OK")
@@ -133,9 +121,9 @@ class SingleSizeModel:
         global_step = self.sess.run(self.global_step_tensor)
         tf.reset_default_graph()
         imported_meta = tf.train.import_meta_graph(
-            "/home/gpu/IStegGAN/Wnet/Checkpoints/")
+            "./Wnet/Checkpoints/my-model.ckpt-100000.meta")
         imported_meta.restore(self.sess,
-                              tf.train.latest_checkpoint('/home/gpu/IStegGAN/Wnet/Checkpoints/'))
+                              tf.train.latest_checkpoint('./Wnet/Checkpoints/'))
         # saver.restore(self.sess, path)
         print("LOADED")
 
@@ -156,7 +144,7 @@ class SingleSizeModel:
                 print("cover loss at step %s: %s" % (step, cover_loss))
                 print("secret loss at step %s: %s" % (step, secret_loss))
 
-        self.make_chkp(saver, "/home/gpu/IStegGAN/Wnet/Checkpoints/model.ckpt")
+        self.make_chkp(saver, "./Wnet/Checkpoints/my-model.ckpt")
 
     def test(self, saver, files_list, batch_size, path):
         self.load_chkp(saver, path)
@@ -198,9 +186,9 @@ class SingleSizeModel:
             print("secret loss at step %s: %s" % (step, secret_loss))
 
 
-m = SingleSizeModel(beta=0.8, log_path="/home/gpu/IStegGAN/Wnet/logs")
+m = SingleSizeModel(beta=0.8, log_path="./Wnet/logs")
 saver = tf.train.Saver()
-train_list = os.listdir('/home/gpu/IStegGAN/image224/train')
-test_list = os.listdir('/home/gpu/IStegGAN/image224/test')
+train_list = os.listdir('./image224/train')
+test_list = os.listdir('./image224/test')
 m.train(saver, 50001, train_list, 4)
-# m.test(saver, test_list, 1, '/home/gpu/IStegGAN/Wnet/Checkpoints/model.ckpt')
+m.test(saver, test_list, 1, './Wnet/Checkpoints/my-model.ckpt')
