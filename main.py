@@ -121,7 +121,7 @@ class SingleSizeModel:
         global_step = self.sess.run(self.global_step_tensor)
         tf.reset_default_graph()
         imported_meta = tf.train.import_meta_graph(
-            "./Wnet/Checkpoints/my-model.ckpt-100000.meta")
+            "./Wnet/Checkpoints/my-model.ckpt-1201.meta")
         imported_meta.restore(self.sess,
                               tf.train.latest_checkpoint('./Wnet/Checkpoints/'))
         # saver.restore(self.sess, path)
@@ -143,8 +143,8 @@ class SingleSizeModel:
                 print("total loss at step %s: %s" % (step, total_loss))
                 print("cover loss at step %s: %s" % (step, cover_loss))
                 print("secret loss at step %s: %s" % (step, secret_loss))
-
-        self.make_chkp(saver, "./Wnet/Checkpoints/my-model.ckpt")
+            if step % 2000 == 0: 
+                self.make_chkp(saver, "./Wnet/Checkpoints/my-model.ckpt")
 
     def test(self, saver, files_list, batch_size, path):
         self.load_chkp(saver, path)
@@ -191,4 +191,4 @@ saver = tf.train.Saver()
 train_list = os.listdir('./imagenet50k/train')
 test_list = os.listdir('./imagenet50k/test')
 m.train(saver, 50001, train_list, 4)
-m.test(saver, test_list, 1, './Wnet/Checkpoints/my-model.ckpt')
+#m.test(saver, test_list, 1, './Wnet/Checkpoints/my-model.ckpt')
