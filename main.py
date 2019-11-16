@@ -22,9 +22,10 @@ class SingleSizeModel:
     def get_loss_op(self, secret_true, secret_pred, cover_true, cover_pred, beta=0.8):
 
         with tf.variable_scope("losses"):
+            batch_size = 4
             beta = tf.constant(beta, name="beta")
-            secret_mse = tf.losses.mean_squared_error(secret_true, secret_pred)
-            cover_mse = tf.losses.mean_squared_error(cover_true, cover_pred)
+            secret_mse = batch_size * (tf.losses.mean_squared_error(secret_true, secret_pred))
+            cover_mse = batch_size * (tf.losses.mean_squared_error(cover_true, cover_pred))
             final_loss = cover_mse + beta * secret_mse
 
             return final_loss, secret_mse, cover_mse
