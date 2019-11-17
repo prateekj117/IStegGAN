@@ -75,7 +75,7 @@ class SingleSizeModel:
             tf.summary.scalar('reveal_net_loss', secret_loss_op, family='test')
             tf.summary.scalar('cover_net_loss', cover_loss_op, family='test')
 
-            tf.summary.image('secret', self.secret_tensor, max_outputs=1, family='test')
+            tf.summary.image('secret', secret_tensor, max_outputs=1, family='test')
             tf.summary.image('cover', cover_tensor, max_outputs=1, family='test')
             tf.summary.image('hidden', hiding_output, max_outputs=1, family='test')
             tf.summary.image('revealed', reveal_output, max_outputs=1, family='test')
