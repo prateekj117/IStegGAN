@@ -19,7 +19,7 @@ class SingleSizeModel:
     #       with tf.variable_scope("noise_layer"):
     #           return tensor + tf.random_normal(shape=tf.shape(tensor), mean=0.0, stddev=std, dtype=tf.float32)
 
-    def get_loss_op(self, secret_true, secret_pred, cover_true, cover_pred, beta=0.8):
+    def get_loss_op(self, secret_true, secret_pred, cover_true, cover_pred, beta=0.75):
 
         with tf.variable_scope("losses"):
             batch_size = 4
@@ -122,7 +122,7 @@ class SingleSizeModel:
         global_step = self.sess.run(self.global_step_tensor)
         tf.reset_default_graph()
         imported_meta = tf.train.import_meta_graph(
-            "./Wnet/Checkpoints/my-model.ckpt-1201.meta")
+            "./Wnet/Checkpoints/my-model.ckpt-2001.meta")
         imported_meta.restore(self.sess,
                               tf.train.latest_checkpoint('./Wnet/Checkpoints/'))
         # saver.restore(self.sess, path)
@@ -149,7 +149,7 @@ class SingleSizeModel:
 
     def test(self, saver, files_list, batch_size, path):
         self.load_chkp(saver, path)
-        for step in range(1):
+        for step in range(1000):
             print("Epoch:\n", step)
             p = 1
             covers, secrets = get_img_batch(files_list, batch_size, p)
@@ -187,9 +187,9 @@ class SingleSizeModel:
             print("secret loss at step %s: %s" % (step, secret_loss))
 
 
-m = SingleSizeModel(beta=0.8, log_path="./Wnet/logs")
+m = SingleSizeModel(beta=0.75, log_path="./Wnet/logs")
 saver = tf.train.Saver()
 train_list = os.listdir('./imagenet50k/train')
 test_list = os.listdir('./imagenet50k/test')
-m.train(saver, 50001, train_list, 4)
-#m.test(saver, test_list, 1, './Wnet/Checkpoints/my-model.ckpt')
+m.train(saver, 40010, train_list, 4)
+# m.test(saver, test_list, 1, './Wnet/Checkpoints/my-model.ckpt')
