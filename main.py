@@ -122,9 +122,9 @@ class SingleSizeModel:
         global_step = self.sess.run(self.global_step_tensor)
         tf.reset_default_graph()
         imported_meta = tf.train.import_meta_graph(
-            "./Wnet/Checkpoints/my-model.ckpt-1201.meta")
+            "./Staircase/Checkpoints/my-model.ckpt-1201.meta")
         imported_meta.restore(self.sess,
-                              tf.train.latest_checkpoint('./Wnet/Checkpoints/'))
+                              tf.train.latest_checkpoint('./Staircase/Checkpoints/'))
         # saver.restore(self.sess, path)
         print("LOADED")
 
@@ -145,7 +145,7 @@ class SingleSizeModel:
                 print("cover loss at step %s: %s" % (step, cover_loss))
                 print("secret loss at step %s: %s" % (step, secret_loss))
             if step % 2000 == 0: 
-                self.make_chkp(saver, "./Wnet/Checkpoints/my-model.ckpt")
+                self.make_chkp(saver, "./Staircase/Checkpoints/my-model.ckpt")
 
     def test(self, saver, files_list, batch_size, path):
         self.load_chkp(saver, path)
@@ -174,12 +174,12 @@ class SingleSizeModel:
 
             for k in range(batch_size):
                 im = Image.fromarray(np.uint8((hiding_output_op[k]) * 255))
-                im.save('./Wnet/container/%s.jpg' % self.i)
+                im.save('./Staircase/container/%s.jpg' % self.i)
                 self.i += 1
 
             for k in range(batch_size):
                 im = Image.fromarray(np.uint8((reveal_output_op[k]) * 255))
-                im.save('./Wnet/secret/%s.jpg' % self.j)
+                im.save('./Staircase/secret/%s.jpg' % self.j)
                 self.j += 1
 
             print("total loss at step %s: %s" % (step, total_loss))
@@ -187,9 +187,9 @@ class SingleSizeModel:
             print("secret loss at step %s: %s" % (step, secret_loss))
 
 
-m = SingleSizeModel(beta=0.8, log_path="./Wnet/logs")
+m = SingleSizeModel(beta=0.8, log_path="./Staircase/logs")
 saver = tf.train.Saver()
 train_list = os.listdir('./imagenet50k/train')
 test_list = os.listdir('./imagenet50k/test')
 m.train(saver, 50001, train_list, 4)
-#m.test(saver, test_list, 1, './Wnet/Checkpoints/my-model.ckpt')
+#m.test(saver, test_list, 1, './Staircase/Checkpoints/my-model.ckpt')
